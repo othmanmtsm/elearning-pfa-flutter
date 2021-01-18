@@ -1,5 +1,21 @@
 import 'dart:io';
 
+class Student {
+  int id;
+  String firstName;
+  String lastName;
+
+  Student({this.id, this.firstName, this.lastName});
+
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
+      id: json['id'] as int,
+      firstName: json['firstName'] as String,
+      lastName: json['lastName'] as String,
+    );
+  }
+}
+
 class RegStudentResponseModel {
   bool success;
   bool error;

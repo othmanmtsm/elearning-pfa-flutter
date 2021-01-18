@@ -28,3 +28,32 @@ class Course {
     );
   }
 }
+
+class CourseRequestModel {
+  String title;
+  String description;
+
+  CourseRequestModel({this.title, this.description});
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'title': title.trim(),
+      'description': description.trim(),
+    };
+    return map;
+  }
+}
+
+class CourseResponseModel {
+  bool success;
+  String message;
+
+  CourseResponseModel({this.success, this.message});
+
+  factory CourseResponseModel.fromJson(Map<String, dynamic> json) {
+    return CourseResponseModel(
+      success: json['success'] != null ? json['success'] : false,
+      message: json['message'] != null ? json['message'] : '',
+    );
+  }
+}

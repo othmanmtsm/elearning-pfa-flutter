@@ -1,13 +1,16 @@
 class LoginResponseModel {
+  final int id;
   final String type;
   final String token;
   final String error;
   final String message;
 
-  LoginResponseModel({this.type, this.token, this.error, this.message});
+  LoginResponseModel(
+      {this.id, this.type, this.token, this.error, this.message});
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
+      id: json['id'] != null ? json['id'] : null,
       type: json['type'] != null ? json['type'] : '',
       token: json['token'] != null ? json['token'] : '',
       error: json['error'] != null ? json['error'] : '',

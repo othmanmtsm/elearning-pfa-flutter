@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 class Chapter {
@@ -24,6 +26,45 @@ class Chapter {
       description: json['description'] as String,
       type: json['type'] as String,
       body: json['body'] as String,
+    );
+  }
+}
+
+class ChapterRequestModel {
+  String title;
+  String description;
+  String type;
+  File body;
+
+  ChapterRequestModel({this.title, this.description, this.type, this.body});
+
+  String getTitle() {
+    return title;
+  }
+
+  String getDescription() {
+    return description;
+  }
+
+  String getType() {
+    return type;
+  }
+
+  File getBody() {
+    return body;
+  }
+}
+
+class ChapterResponseModel {
+  bool success;
+  String message;
+
+  ChapterResponseModel({this.success, this.message});
+
+  factory ChapterResponseModel.fromJson(Map<String, dynamic> json) {
+    return ChapterResponseModel(
+      success: json['success'] != null ? json['success'] : false,
+      message: json['message'] != null ? json['message'] : '',
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:elearning/models/logn_model.dart';
 import 'package:elearning/utils/api.dart';
 import 'package:elearning/views/register.dart';
+import 'package:elearning/views/school/home_school.dart';
 import 'package:elearning/views/student/home_student.dart';
 import 'package:flutter/material.dart';
 
@@ -91,10 +92,18 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: Colors.green,
                         ));
                         if (value.type == 'student') {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => StudentHome()),
+                              builder: (context) => StudentHome(),
+                            ),
+                          );
+                        } else if (value.type == 'school') {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SchoolHome(id: value.id),
+                            ),
                           );
                         }
                       }

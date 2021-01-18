@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:elearning/models/chapter_model.dart';
+import 'package:elearning/models/group_model.dart';
 import 'package:elearning/models/logn_model.dart';
 import 'package:elearning/models/register_model.dart';
 import 'package:elearning/models/school_model.dart';
@@ -81,6 +82,21 @@ class APIService {
     }
   }
 
+  Future<List<Course>> getGroupCourses(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    Dio dio = new Dio();
+    dio.options.headers['Authorization'] = prefs.getString('token');
+    Response res =
+        await dio.get("http://10.0.2.2:3000/school/group/$id/courses");
+    if (res.statusCode == 200) {
+      List<dynamic> body = res.data;
+      List<Course> courses = body.map((e) => Course.fromJson(e)).toList();
+      return courses;
+    } else {
+      throw "can't get courses";
+    }
+  }
+
   Future<List<Chapter>> getChapters(int id) async {
     print(id);
     Dio dio = new Dio();
@@ -93,5 +109,98 @@ class APIService {
     } else {
       throw "can't get chapters";
     }
+  }
+
+  Future<List<Group>> getGroups() async {
+    final prefs = await SharedPreferences.getInstance();
+    Dio dio = new Dio();
+    dio.options.headers['Authorization'] = prefs.getString('token');
+    Response res = await dio.get("http://10.0.2.2:3000/school/groups");
+    if (res.statusCode == 200) {
+      List<dynamic> body = res.data;
+      List<Group> groups = body.map((e) => Group.fromJson(e)).toList();
+      return groups;
+    } else {
+      throw "can't get courses";
+    }
+  }
+
+  Future<GroupResponseModel> addGroup(GroupRequestModel requestModel) async {
+    final prefs = await SharedPreferences.getInstance();
+    String url = "http://10.0.2.2:3000/school/groups/add";
+    final response = await http.post(
+      url,
+      body: requestModel.toJson(),
+      headers: {HttpHeaders.authorizationHeader: prefs.getString('token')},
+    );
+    return GroupResponseModel.fromJson(json.decode(response.body));
+  }
+
+  Future<CourseResponseModel> addCourse(
+      CourseRequestModel requestModel, int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    String url = "http://10.0.2.2:3000/school/group/$id/courses/add";
+    final response = await http.post(
+      url,
+      body: requestModel.toJson(),
+      headers: {HttpHeaders.authorizationHeader: prefs.getString('token')},
+    );
+    return CourseResponseModel.fromJson(json.decode(response.body));
+  }
+
+  Future<ChapterResponseModel> addChapter(
+      ChapterRequestModel requestModel, int id) async {
+    String url = "http://10.0.2.2:3000/school/courses/$id/chapters/add";
+    File file = requestModel.getBody();
+    String fileName = file.path.split('/').last;
+    FormData data = FormData.fromMap({
+      "body": await MultipartFile.fromFile(
+        file.path,
+        filename: fileName,
+      ),
+      "title": requestModel.getTitle(),
+      "description": requestModel.getDescription(),
+      "type": requestModel.getType(),
+    });
+    Dio dio = new Dio();
+    final res = await dio.post(url, data: data);
+    return ChapterResponseModel.fromJson(json.decode(res.toString()));
+  }
+
+  Future<List<Student>> getGroupStudents(int id) async {
+    Dio dio = new Dio();
+    Response res =
+        await dio.get("http://10.0.2.2:3000/school/group/$id/students");
+    if (res.statusCode == 200) {
+      List<dynamic> body = res.data;
+      List<Student> students = body.map((e) => Student.fromJson(e)).toList();
+      return students;
+    } else {
+      throw "can't get students";
+    }
+  }
+
+  Future<List<Student>> getStudents() async {
+    Dio dio = new Dio();
+    Response res = await dio.get("http://10.0.2.2:3000/student");
+    if (res.statusCode == 200) {
+      List<dynamic> body = res.data;
+      List<Student> students = body.map((e) => Student.fromJson(e)).toList();
+      return students;
+    } else {
+      throw "can't get students";
+    }
+  }
+
+  void addStudentToGroup(int idg, int ids) async {
+    print(ids);
+    String url = "http://10.0.2.2:3000/school/group/$idg/students/add";
+    await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, int>{'student_id': ids}),
+    );
   }
 }
